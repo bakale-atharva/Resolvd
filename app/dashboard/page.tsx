@@ -23,15 +23,23 @@ import type { Doc } from "@/convex/_generated/dataModel";
 import { api } from "@/convex/_generated/api";
 
 const MODEL_OPTIONS = [
-  { value: "openai/gpt-4o-mini", label: "GPT-4o Mini (OpenRouter)" },
-  { value: "openai/gpt-4o", label: "GPT-4o (OpenRouter)" },
+  { value: "openrouter/free", label: "Free Models Router — Auto (Free)" },
+  { value: "google/gemma-4-31b-it:free", label: "Google Gemma 4 31B (Free)" },
   {
-    value: "anthropic/claude-3.5-sonnet",
-    label: "Claude 3.5 Sonnet (OpenRouter)",
+    value: "google/gemma-4-26b-a4b-it:free",
+    label: "Google Gemma 4 26B A4B (Free)",
   },
   {
-    value: "google/gemini-2.5-flash",
-    label: "Gemini 2.5 Flash (OpenRouter)",
+    value: "nvidia/nemotron-3.5-lightning:free",
+    label: "NVIDIA Nemotron 3.5 Lightning (Free)",
+  },
+  {
+    value: "nvidia/nemotron-3-ultra-550b-a55b:free",
+    label: "NVIDIA Nemotron 3 Ultra (Free)",
+  },
+  {
+    value: "baidu/ernie-5.5-flash-preview:free",
+    label: "Baidu ERNIE 5.5 Flash (Free)",
   },
 ];
 
