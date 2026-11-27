@@ -6,9 +6,9 @@
     "semantic_hash": ""
   },
   "app/layout.tsx": {
-    "mtime": 1795750286.2629225,
-    "seen": 1795750307.1642811,
-    "ast_hash": "c237cbafb315f10e58739c43444c7c96",
+    "mtime": 1795750426.097389,
+    "seen": 1795750466.890357,
+    "ast_hash": "60c907e01b97d723db5ec78040ae0167",
     "semantic_hash": ""
   },
   "app/page.tsx": {
@@ -138,9 +138,9 @@
     "semantic_hash": ""
   },
   "proxy.ts": {
-    "mtime": 1795750284.4355323,
-    "seen": 1795750307.164298,
-    "ast_hash": "b7bfff7caa489ea153819b4289b7eaa7",
+    "mtime": 1795750500.7275302,
+    "seen": 1795750537.5031989,
+    "ast_hash": "88d9818ea21f143b8cec476364314325",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -252,21 +252,21 @@
     "semantic_hash": ""
   },
   "convex/__tests__/authz.test.ts": {
-    "mtime": 1795750054.9070663,
-    "seen": 1795750307.164286,
-    "ast_hash": "957b2c6039b6798179895cbca22e194e",
+    "mtime": 1795750358.0216458,
+    "seen": 1795750466.890362,
+    "ast_hash": "01e9d49471fc1a5bd46cca043bd401b4",
     "semantic_hash": ""
   },
   "convex/__tests__/memberships.test.ts": {
-    "mtime": 1795750121.6909926,
-    "seen": 1795750307.164287,
-    "ast_hash": "169d6dc291eceba3286fb90fc0810b66",
+    "mtime": 1795750359.7808416,
+    "seen": 1795750466.890362,
+    "ast_hash": "12821686a6c9771a6190444994609dbc",
     "semantic_hash": ""
   },
   "convex/http.ts": {
-    "mtime": 1795750220.2978806,
-    "seen": 1795750307.164292,
-    "ast_hash": "0a4c48f5e2e7d395e10d8c67bdbcc33c",
+    "mtime": 1795775319.5227997,
+    "seen": 1795776079.81214,
+    "ast_hash": "281022a6ff2cd5f00f4efdd5b582a0d9",
     "semantic_hash": ""
   },
   "convex/lib/auth.ts": {

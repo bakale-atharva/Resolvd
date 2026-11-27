@@ -1,5 +1,4 @@
 {
-  "0": "convex.config.ts",
   "1": "Resolvd — Phased Implementation Plan",
   "2": "devDependencies",
   "3": "workspaces.ts",
@@ -7,21 +6,14 @@
   "5": "DashboardShell.tsx",
   "6": "compilerOptions",
   "7": "server.d.ts",
-  "8": "dependencies",
+  "8": "package.json",
   "9": "compilerOptions",
   "10": "dashboard/page.tsx",
-  "11": "scripts",
   "12": "Product",
   "13": "README.md",
   "14": "allowBuilds",
   "15": "AGENTS.md",
   "16": "convex/README.md",
   "17": "CLAUDE.md",
-  "18": "Design System — Resolvd",
-  "19": "eslint.config.mjs",
-  "20": "cn",
-  "21": "@base-ui/react",
-  "22": "@openrouter/ai-sdk-provider@^3.1.0",
-  "23": "react-dom@19.3.0",
-  "24": "tailwind-merge@^3.7.1"
+  "18": "Design System — Resolvd"
 }
