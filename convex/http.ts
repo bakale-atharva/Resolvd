@@ -46,11 +46,12 @@ http.route({
 
     try {
       const wh = new Webhook(webhookSecret);
-      event = wh.verify(payload, {
+      wh.verify(payload, {
         "svix-id": svixId,
         "svix-timestamp": svixTimestamp,
         "svix-signature": svixSignature,
-      }) as unknown as ClerkWebhookEvent;
+      });
+      event = JSON.parse(payload) as ClerkWebhookEvent;
     } catch {
       return new Response("Invalid webhook signature", { status: 400 });
     }
