@@ -213,4 +213,25 @@ export default defineSchema({
     crawlPages: v.number(),
     updatedAt: v.number(),
   }).index("by_workspaceId_and_period", ["workspaceId", "period"]),
+
+  messageCitations: defineTable({
+    workspaceId: v.id("workspaces"),
+    threadId: v.string(),
+    messageId: v.string(),
+    citations: v.array(
+      v.object({
+        title: v.string(),
+        sourceType: v.union(
+          v.literal("article"),
+          v.literal("document"),
+          v.literal("website"),
+          v.literal("unknown"),
+        ),
+        sourceId: v.string(),
+        url: v.optional(v.string()),
+        slug: v.optional(v.string()),
+      }),
+    ),
+    createdAt: v.number(),
+  }).index("by_threadId", ["threadId"]),
 });
