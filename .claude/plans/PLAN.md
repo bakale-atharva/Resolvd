@@ -62,7 +62,11 @@
 - **Backend:** Svix-verified Clerk webhook handler in `convex/http.ts` (or Next.js `/api/webhooks/clerk` calling internal Convex mutations) for `organization.created`, `organization.updated`, `organizationMembership.created`, `organizationMembership.updated`, `organizationMembership.deleted`.
 - **Backend:** `convex/memberships.ts` queries/internal mutations to list workspace members and roles.
 
-### Phase 1C: Dashboard Shell, Onboarding & Team Management UI
+### Phase 1C: Impeccable Design Setup, Dashboard Shell, Onboarding & Team Management UI
+- **Impeccable Step-by-Step Setup:**
+  1. Run `.agents/skills/impeccable/scripts/impeccable context` and follow the `init` playbook to create `PRODUCT.md` (defining Resolvd's product truth, target enterprise users, and surface modes: `Operate` for `/dashboard`, `Read` for Help Center, `Persuade` for `/`).
+  2. Follow `reference/new-work.md` + `reference/new-work-world.md` to establish Resolvd's visual world, typography, color tokens, and `DESIGN.md`.
+  3. Read `reference/craft-floor.md` before writing UI components.
 - **Frontend:** `app/dashboard/layout.tsx` responsive B2B shell (sidebar + topbar with `<OrganizationSwitcher />`, `<UserButton />`, role badge, and role-gated navigation).
 - **Frontend:** `app/dashboard/page.tsx` workspace overview + automatic onboarding flow (`<CreateOrganization />` / `<OrganizationList />` + one-click workspace provisioning).
 - **Frontend:** `app/dashboard/team/page.tsx` (`org:admin` gated) embedding Clerk `<OrganizationProfile />` alongside synced Convex workspace members.
