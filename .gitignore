@@ -43,3 +43,7 @@ next-env.d.ts
 # Agent SKills
 .agents/*
 .claude/skills/*
+
+# Graphify
+graphify-out/
+.gitattributes

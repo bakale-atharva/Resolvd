@@ -1,6 +1,14 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+function isDashboardRoute(pathname: string): boolean {
+  return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+}
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isDashboardRoute(req.nextUrl.pathname)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
