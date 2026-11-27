@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { ResolvdLogo } from "@/components/brand/ResolvdLogo";
 import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 
@@ -99,24 +100,8 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const sidebarContent = (
     <div className="flex h-full flex-col bg-sidebar border-r border-sidebar-border">
       <div className="flex h-14 items-center justify-between px-4 border-b border-sidebar-border">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-2.5 font-semibold tracking-tight text-foreground"
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="h-4 w-4"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          </span>
-          <span className="text-base">Resolvd</span>
+        <Link href="/dashboard">
+          <ResolvdLogo />
         </Link>
         <button
           type="button"

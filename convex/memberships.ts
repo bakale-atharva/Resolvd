@@ -62,7 +62,7 @@ export const upsertMembershipFromWebhook = internalMutation({
         slug,
         planTier: "free",
         subscriptionStatus: "active",
-        aiModel: "openai/gpt-4o-mini",
+        aiModel: "openrouter/free",
         createdAt: now,
         updatedAt: now,
       });

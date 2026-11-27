@@ -18,7 +18,7 @@ describe("Resolvd schema smoke test", () => {
         slug: "acme-smoke",
         planTier: "free",
         subscriptionStatus: "active",
-        aiModel: "openai/gpt-4o-mini",
+        aiModel: "openrouter/free",
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });

@@ -8,7 +8,11 @@ import {
   requireWorkspaceMember,
 } from "./lib/auth";
 
-const DEFAULT_AI_MODEL = "openai/gpt-4o-mini";
+const DEFAULT_AI_MODEL = "openrouter/free";
+
+export function isFreeOpenRouterModel(modelId: string): boolean {
+  return modelId === "openrouter/free" || modelId.endsWith(":free");
+}
 
 async function insertDefaultWidgetConfig(
   ctx: MutationCtx,
@@ -205,6 +209,11 @@ export const updateWorkspaceSettings = mutation({
       const trimmed = args.aiModel.trim();
       if (!trimmed) {
         throw new ConvexError("AI model cannot be empty");
+      }
+      if (!isFreeOpenRouterModel(trimmed)) {
+        throw new ConvexError(
+          "Only free OpenRouter models (openrouter/free or *:free) are allowed",
+        );
       }
       patch.aiModel = trimmed;
     }

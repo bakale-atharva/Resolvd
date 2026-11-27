@@ -95,15 +95,22 @@ describe("Multi-tenancy & RBAC authorization", () => {
     // Updating Org A does not affect Org B
     await adminA.mutation(api.workspaces.updateWorkspaceSettings, {
       name: "Acme A Updated",
-      aiModel: "anthropic/claude-3.5-sonnet",
+      aiModel: "google/gemma-4-31b-it:free",
     });
+
+    // Rejects paid OpenRouter models
+    await expect(
+      adminA.mutation(api.workspaces.updateWorkspaceSettings, {
+        aiModel: "openai/gpt-4o",
+      }),
+    ).rejects.toThrow(/free OpenRouter models/i);
 
     const refreshedB = await adminB.query(
       api.workspaces.getCurrentWorkspace,
       {},
     );
     expect(refreshedB?.workspace.name).toBe("Beta B");
-    expect(refreshedB?.workspace.aiModel).toBe("openai/gpt-4o-mini");
+    expect(refreshedB?.workspace.aiModel).toBe("openrouter/free");
   });
 
   it("rejects org:member from admin-only mutations while allowing member reads", async () => {
