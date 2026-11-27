@@ -8,13 +8,23 @@
  * @module
  */
 
+import type * as http from "../http.js";
+import type * as lib_auth from "../lib/auth.js";
+import type * as memberships from "../memberships.js";
+import type * as workspaces from "../workspaces.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  http: typeof http;
+  "lib/auth": typeof lib_auth;
+  memberships: typeof memberships;
+  workspaces: typeof workspaces;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
