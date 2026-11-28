@@ -8,7 +8,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { ResolvdLogo } from "@/components/brand/ResolvdLogo";
+import { ResolvdLogoMark } from "@/components/brand/ResolvdLogo";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { WidgetChatView } from "./WidgetChatView";
@@ -176,7 +176,7 @@ export function EmbedWidget({ workspaceId }: { workspaceId: Id<"workspaces"> }) 
             />
           ) : (
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/15">
-              <ResolvdLogo className="h-4 w-4 text-white" />
+              <ResolvdLogoMark className="h-5 w-5" />
             </div>
           )}
           <div className="min-w-0">

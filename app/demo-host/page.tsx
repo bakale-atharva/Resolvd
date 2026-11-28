@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { Check, Code2, Copy, ExternalLink, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ResolvdLogo } from "@/components/brand/ResolvdLogo";
+import { ResolvdLogoMark } from "@/components/brand/ResolvdLogo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 
@@ -79,7 +79,7 @@ export default function DemoHostPage() {
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <ResolvdLogo className="h-5 w-5 text-primary" />
+            <ResolvdLogoMark className="h-6 w-6" />
             <span className="text-sm font-semibold tracking-tight">
               Resolvd Demo Host
             </span>
