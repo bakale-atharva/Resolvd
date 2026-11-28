@@ -17,6 +17,12 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import {
+  syncConversationInsert,
+  syncConversationUpdate,
+  syncLeadInsert,
+  syncLeadUpdate,
+} from "./lib/aggregates";
 
 const citationValidator = v.object({
   title: v.string(),
@@ -185,6 +191,15 @@ export const startOrResumeVisitorSession = mutation({
         updatedAt: now,
       });
       await ctx.db.patch(conversationId, { leadId });
+      const leadDoc = await ctx.db.get(leadId);
+      if (leadDoc) {
+        await syncLeadInsert(ctx, leadDoc);
+      }
+    }
+
+    const conversationDoc = await ctx.db.get(conversationId);
+    if (conversationDoc) {
+      await syncConversationInsert(ctx, conversationDoc);
     }
 
     return {
@@ -196,6 +211,48 @@ export const startOrResumeVisitorSession = mutation({
       visitorEmail: trimmedEmail ?? null,
       visitorPhone: trimmedPhone ?? null,
       hasLeadInfo: Boolean(trimmedName || trimmedEmail || trimmedPhone),
+    };
+  },
+});
+
+export const getWidgetConversationStatus = query({
+  args: {
+    workspaceId: v.id("workspaces"),
+    conversationId: v.id("conversations"),
+    visitorSessionId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const conversation = await ctx.db.get(args.conversationId);
+    if (
+      !conversation ||
+      conversation.workspaceId !== args.workspaceId ||
+      conversation.visitorSessionId !== args.visitorSessionId
+    ) {
+      return null;
+    }
+
+    let assignedAgentName: string | null = null;
+    if (conversation.assignedToUserId) {
+      const membership = await ctx.db
+        .query("memberships")
+        .withIndex("by_workspaceId_and_clerkUserId", (q) =>
+          q
+            .eq("workspaceId", args.workspaceId)
+            .eq("clerkUserId", conversation.assignedToUserId!),
+        )
+        .unique();
+      assignedAgentName = membership?.name ?? null;
+    }
+
+    return {
+      mode: conversation.mode,
+      status: conversation.status,
+      assignedAgentName,
+      hasLeadInfo: Boolean(
+        conversation.visitorName ||
+          conversation.visitorEmail ||
+          conversation.visitorPhone,
+      ),
     };
   },
 });
@@ -236,12 +293,17 @@ export const submitLeadCapture = mutation({
     });
 
     if (conversation.leadId) {
+      const oldLead = await ctx.db.get(conversation.leadId);
       await ctx.db.patch(conversation.leadId, {
         ...(name ? { name } : {}),
         ...(email ? { email } : {}),
         ...(phone ? { phone } : {}),
         updatedAt: now,
       });
+      const newLead = await ctx.db.get(conversation.leadId);
+      if (oldLead && newLead) {
+        await syncLeadUpdate(ctx, oldLead, newLead);
+      }
       return conversation.leadId;
     }
 
@@ -258,6 +320,10 @@ export const submitLeadCapture = mutation({
     });
 
     await ctx.db.patch(conversation._id, { leadId });
+    const leadDoc = await ctx.db.get(leadId);
+    if (leadDoc) {
+      await syncLeadInsert(ctx, leadDoc);
+    }
     return leadId;
   },
 });
@@ -291,6 +357,10 @@ export const sendVisitorMessage = mutation({
       lastMessagePreview: trimmed.slice(0, 140),
       lastMessageAt: now,
     });
+    const updatedConversation = await ctx.db.get(conversation._id);
+    if (updatedConversation) {
+      await syncConversationUpdate(ctx, conversation, updatedConversation);
+    }
 
     const { messageId } = await saveMessage(ctx, components.agent, {
       threadId: conversation.threadId,
@@ -510,10 +580,15 @@ export const recordAssistantReply = internalMutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
+    const oldConversation = await ctx.db.get(args.conversationId);
     await ctx.db.patch(args.conversationId, {
       lastMessagePreview: args.preview,
       lastMessageAt: now,
     });
+    const newConversation = await ctx.db.get(args.conversationId);
+    if (oldConversation && newConversation) {
+      await syncConversationUpdate(ctx, oldConversation, newConversation);
+    }
 
     if (args.citations.length > 0) {
       await ctx.db.insert("messageCitations", {

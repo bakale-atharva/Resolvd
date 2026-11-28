@@ -1,4 +1,5 @@
 import { register as registerAgent } from "@convex-dev/agent/test";
+import { register as registerAggregate } from "@convex-dev/aggregate/test";
 import { convexTest } from "convex-test";
 import { describe, expect, it } from "vitest";
 import { api } from "../_generated/api";
@@ -76,6 +77,9 @@ describe("Public Widget & Help Center", () => {
   it("starts/resumes visitor sessions, captures leads, and scopes messages to visitorSessionId", async () => {
     const t = convexTest(schema, modules);
     registerAgent(t, "agent");
+    registerAggregate(t, "conversationsByUnread");
+    registerAggregate(t, "conversationsByAssignee");
+    registerAggregate(t, "leadsByStatus");
 
     const admin = t.withIdentity(asOrgAdmin("admin_2", "org_widget_2"));
     const workspaceId = await admin.mutation(api.workspaces.provisionWorkspace, {
