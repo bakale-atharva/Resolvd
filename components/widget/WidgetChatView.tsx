@@ -1,6 +1,7 @@
 "use client";
 
 import { useSmoothText, useUIMessages, type UIMessage } from "@convex-dev/agent/react";
+import usePresence from "@convex-dev/presence/react";
 import { useMutation, useQuery } from "convex/react";
 import {
   BookOpen,
@@ -32,11 +33,52 @@ interface WidgetChatViewProps {
   conversationId: Id<"conversations"> | null;
   threadId: string | null;
   mode: "ai" | "human";
+  assignedAgentName: string | null;
   hasLeadInfo: boolean;
   onLeadSubmitted: () => void;
   onOpenArticle: (slug: string) => void;
   pendingPrompt: string | null;
   onConsumePendingPrompt: () => void;
+}
+
+interface RoomUserData {
+  role?: "agent" | "visitor";
+  name?: string;
+  isTyping?: boolean;
+}
+
+function WidgetPresenceBridge({
+  conversationId,
+  visitorSessionId,
+  onAgentTypingChange,
+}: {
+  conversationId: Id<"conversations">;
+  visitorSessionId: string;
+  onAgentTypingChange: (agentName: string | null) => void;
+}) {
+  const presenceState = usePresence(
+    api.presence,
+    `conv:${conversationId}`,
+    `visitor:${visitorSessionId}`,
+    10_000,
+  );
+
+  useEffect(() => {
+    const typingAgent = (presenceState ?? []).find((entry) => {
+      if (!entry.online || !entry.userId.startsWith("agent:")) return false;
+      const data = entry.data as RoomUserData | undefined;
+      return Boolean(data?.isTyping);
+    });
+
+    if (typingAgent) {
+      const data = typingAgent.data as RoomUserData | undefined;
+      onAgentTypingChange(data?.name || "Agent");
+    } else {
+      onAgentTypingChange(null);
+    }
+  }, [presenceState, onAgentTypingChange]);
+
+  return null;
 }
 
 function getMessageText(message: UIMessage): string {
@@ -148,6 +190,7 @@ export function WidgetChatView({
   conversationId,
   threadId,
   mode,
+  assignedAgentName,
   hasLeadInfo,
   onLeadSubmitted,
   onOpenArticle,
@@ -157,6 +200,7 @@ export function WidgetChatView({
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [typingAgentName, setTypingAgentName] = useState<string | null>(null);
 
   const [leadName, setLeadName] = useState("");
   const [leadEmail, setLeadEmail] = useState("");
@@ -165,9 +209,12 @@ export function WidgetChatView({
   const [leadError, setLeadError] = useState<string | null>(null);
 
   const scrollEndRef = useRef<HTMLDivElement | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isVisitorTypingRef = useRef(false);
 
   const sendVisitorMessage = useMutation(api.widget.sendVisitorMessage);
   const submitLeadCapture = useMutation(api.widget.submitLeadCapture);
+  const setVisitorTyping = useMutation(api.presence.setVisitorTyping);
 
   const messagesResult = useUIMessages(
     api.widget.listWidgetMessages,
@@ -209,7 +256,69 @@ export function WidgetChatView({
 
   useEffect(() => {
     scrollEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, lastMessageText]);
+  }, [messages.length, lastMessageText, typingAgentName]);
+
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      if (isVisitorTypingRef.current && conversationId) {
+        isVisitorTypingRef.current = false;
+        void setVisitorTyping({
+          workspaceId,
+          conversationId,
+          visitorSessionId,
+          isTyping: false,
+        });
+      }
+    };
+  }, [conversationId, setVisitorTyping, visitorSessionId, workspaceId]);
+
+  function notifyVisitorTyping(nextText: string) {
+    if (!conversationId) return;
+    const hasText = nextText.trim().length > 0;
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+
+    if (!hasText) {
+      if (isVisitorTypingRef.current) {
+        isVisitorTypingRef.current = false;
+        void setVisitorTyping({
+          workspaceId,
+          conversationId,
+          visitorSessionId,
+          isTyping: false,
+        });
+      }
+      return;
+    }
+
+    if (!isVisitorTypingRef.current) {
+      isVisitorTypingRef.current = true;
+      void setVisitorTyping({
+        workspaceId,
+        conversationId,
+        visitorSessionId,
+        isTyping: true,
+      });
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      if (isVisitorTypingRef.current) {
+        isVisitorTypingRef.current = false;
+        void setVisitorTyping({
+          workspaceId,
+          conversationId,
+          visitorSessionId,
+          isTyping: false,
+        });
+      }
+    }, 3000);
+  }
 
   useEffect(() => {
     if (!pendingPrompt || !conversationId || !threadId) {
@@ -290,6 +399,7 @@ export function WidgetChatView({
     if (!trimmed || !conversationId || isSending) return;
 
     setInput("");
+    notifyVisitorTyping("");
     setSendError(null);
     setIsSending(true);
     try {
@@ -392,12 +502,22 @@ export function WidgetChatView({
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
+      {conversationId && (
+        <WidgetPresenceBridge
+          conversationId={conversationId}
+          visitorSessionId={visitorSessionId}
+          onAgentTypingChange={setTypingAgentName}
+        />
+      )}
+
       {/* Mode indicator banner */}
       <div className="flex items-center justify-between border-b border-black/6 bg-white/80 px-4 py-2 text-[11px] text-neutral-600">
         {mode === "human" ? (
           <span className="inline-flex items-center gap-1.5 font-medium text-emerald-700">
             <UserCheck className="h-3.5 w-3.5" />
-            Connected with a support teammate
+            {assignedAgentName
+              ? `Connected with ${assignedAgentName}`
+              : "Connected with a support teammate"}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 font-medium text-neutral-700">
@@ -450,6 +570,17 @@ export function WidgetChatView({
             return null;
           })
         )}
+
+        {typingAgentName && (
+          <div className="flex items-center gap-2 pl-1 text-[11px] text-neutral-500">
+            <span className="inline-flex items-center gap-1 rounded-full border border-black/8 bg-white px-2.5 py-1 shadow-xs">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              {typingAgentName === "Agent"
+                ? "Agent is typing…"
+                : `${typingAgentName} is typing…`}
+            </span>
+          </div>
+        )}
         <div ref={scrollEndRef} />
       </div>
 
@@ -465,7 +596,12 @@ export function WidgetChatView({
           <textarea
             rows={1}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setInput(val);
+              notifyVisitorTyping(val);
+            }}
+            onBlur={() => notifyVisitorTyping("")}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();

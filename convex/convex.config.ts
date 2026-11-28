@@ -13,5 +13,8 @@ app.use(presence);
 app.use(rateLimiter);
 app.use(workpool);
 app.use(aggregate);
+app.use(aggregate, { name: "conversationsByUnread" });
+app.use(aggregate, { name: "conversationsByAssignee" });
+app.use(aggregate, { name: "leadsByStatus" });
 
 export default app;

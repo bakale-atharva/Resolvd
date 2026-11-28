@@ -70,6 +70,16 @@ export function EmbedWidget({ workspaceId }: { workspaceId: Id<"workspaces"> }) 
     api.widget.searchPublicArticles,
     config ? { workspaceId } : "skip",
   );
+  const liveStatus = useQuery(
+    api.widget.getWidgetConversationStatus,
+    sessionState
+      ? {
+          workspaceId,
+          conversationId: sessionState.conversationId,
+          visitorSessionId,
+        }
+      : "skip",
+  );
   const startOrResume = useMutation(api.widget.startOrResumeVisitorSession);
 
   useEffect(() => {
@@ -225,8 +235,11 @@ export function EmbedWidget({ workspaceId }: { workspaceId: Id<"workspaces"> }) 
             visitorSessionId={visitorSessionId}
             conversationId={sessionState?.conversationId ?? null}
             threadId={sessionState?.threadId ?? null}
-            mode={sessionState?.mode ?? "ai"}
-            hasLeadInfo={sessionState?.hasLeadInfo ?? false}
+            mode={liveStatus?.mode ?? sessionState?.mode ?? "ai"}
+            assignedAgentName={liveStatus?.assignedAgentName ?? null}
+            hasLeadInfo={
+              liveStatus?.hasLeadInfo ?? sessionState?.hasLeadInfo ?? false
+            }
             onLeadSubmitted={() =>
               setSessionState((prev) =>
                 prev ? { ...prev, hasLeadInfo: true } : prev,
