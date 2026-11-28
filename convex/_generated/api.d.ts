@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as agent from "../agent.js";
 import type * as articles from "../articles.js";
 import type * as crawler from "../crawler.js";
 import type * as crawlerNode from "../crawlerNode.js";
@@ -18,6 +19,7 @@ import type * as lib_auth from "../lib/auth.js";
 import type * as lib_ssrf from "../lib/ssrf.js";
 import type * as memberships from "../memberships.js";
 import type * as rag from "../rag.js";
+import type * as widget from "../widget.js";
 import type * as workspaces from "../workspaces.js";
 
 import type {
@@ -27,6 +29,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  agent: typeof agent;
   articles: typeof articles;
   crawler: typeof crawler;
   crawlerNode: typeof crawlerNode;
@@ -37,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   "lib/ssrf": typeof lib_ssrf;
   memberships: typeof memberships;
   rag: typeof rag;
+  widget: typeof widget;
   workspaces: typeof workspaces;
 }>;
 

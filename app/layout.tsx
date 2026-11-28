@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Resolvd — AI Customer Support Platform",
     description:
-      "Multi-tenant AI customer support platform with an embeddable chat widget, RAG knowledge base, shared team inbox, and one-click human takeover.",
+      "Multi-tenant AI customer support platform with an embeddable chat widget, RAG knowledge base, shared team inbox, and one-click human takeover. Inspired by Sonny Sangha, vibe coded using Claude & Antigravity.",
     siteName: "Resolvd",
     type: "website",
   },
